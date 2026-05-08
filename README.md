@@ -219,7 +219,9 @@ ClaudeAI.prototype = {
 ### Step 5 — Business Rule Scripts
 
 #### BR 1 — Summarize Incident
-
+> **Note:** BR 1 — Claude: Summarize Incident
+Table: incident | When: after | Insert: ✅ | Update: ❌
+Condition: current.short_description != ''
 ```
 (function executeRule(current, previous /*null when async*/) {
 
@@ -235,6 +237,11 @@ var claude = new ClaudeAI();
 })(current, previous);
 ```
 #### BR 2 — Suggest Resolution
+> **Note:** BR 2 — Claude: Suggest Resolution
+Table: incident | When: after | Insert: ❌ | Update: ✅
+Condition: current.state == 2 && previous.state != 2
+(fires only when moved to "In Progress")
+
 ```
 (function executeRule(current, previous /*null when async*/) {
 
@@ -252,6 +259,10 @@ var note = result.success ? 'AI Resolution Suggestions:\n' + result.message : ' 
 ```
 
 #### BR 3 — Critical Incident RCA
+> **Note:**  BR 3 — Claude: Critical Incident RCA
+Table: incident | When: after | Insert: ✅ | Update: ✅
+Condition: current.priority == 1 (for P1 critical Inc's only)
+
 ```
 (function executeRule(current, previous /*null when async*/) {
 
@@ -267,6 +278,10 @@ var note = result.success ? ' AI Root Cause Analysis:\n' + result.message : ' Cl
 })(current, previous);
 ```
 #### BR 4 — Generate KB Article
+> **Note:** BR 4 — Claude: Generate KB Article
+Table: incident | When: after | Update: ✅
+Condition: current.state == 6 && previous.state != 6
+(fires only when moved to "Resolved")
 
 ```(function executeRule(current, previous /*null when async*/) {
 var claude = new ClaudeAI();
